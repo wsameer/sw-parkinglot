@@ -13,6 +13,10 @@ class ParkingLot {
     return this._parkingSlots;
   }
 
+  emptyThisSlot(index) {
+    this._parkingSlots[index] = null;
+  }
+
   getOccupiedParkingSpots() {
     // get the updated parking slots
     return this._parkingSlots.filter(function (element) {

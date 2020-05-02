@@ -20,4 +20,7 @@ parkingLotRouter.post('/create', ParkingLotController.create);
 // GET: Get the status of parking lot
 parkingLotRouter.get('/status', ParkingLotController.status);
 
+// DELETE: remove a vehicle from a parking spot
+parkingLotRouter.delete('/unpark', ParkingLotController.unPark);
+
 module.exports = parkingLotRouter;

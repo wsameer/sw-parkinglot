@@ -103,10 +103,10 @@ const ParkingLotController = (function () {
         // Add vehicle to the alloted parking spots
         parkingLot.addVehicleToParkingSpot(
           slotsToReserve[index],
-          { 
-            registrationNumber: params.registrationNumber, 
+          {
+            registrationNumber: params.registrationNumber,
             slotNumber: slotNumber,
-            vehicleType: params.vehicleType 
+            vehicleType: params.vehicleType
           }
         );
       }
@@ -147,8 +147,6 @@ const ParkingLotController = (function () {
           });
         }
 
-        // console.log(parkingSlots);
-
         // We are sure that there are parking slots
         let firstEmptySlot = parkingLot.getFirstEmptySlot();
         if (firstEmptySlot == null) {
@@ -177,6 +175,38 @@ const ParkingLotController = (function () {
           success: 0
         });
       }
+    }
+  }
+
+  /**
+   * DELETE the record from the parking lot
+   * @param {*} registrationNumber The registration number of the vehicle going out
+   */
+  const unParkVehicle = (req, res, next) => {
+    if (req.body && req.body.registrationNumber !== '') {
+
+      let recordsRemoved = 0;
+      const parkingSlots = parkingLot.getParkingSlots();
+      const toDelete = req.body.registrationNumber.replace(/\s/g, '');
+
+      parkingSlots.forEach((element, index) => {
+        if (element != null && element.registrationNumber === toDelete) {
+          parkingLot.emptyThisSlot(index);
+          recordsRemoved += 1;
+        }
+      });
+
+      console.debug('Removed ' + recordsRemoved + ' records');
+      return res.status(200).json({
+        data: 'Vehicle has been removed from the parking lot',
+        success: 1
+      });
+
+    } else {
+      return res.status(200).json({
+        message: 'Vehicle is not parked',
+        success: 0
+      });
     }
   }
 
@@ -223,7 +253,7 @@ const ParkingLotController = (function () {
         return 2;
 
       case 3: // it's a truck
-        return 4;
+        return 5;
 
       default:
         return 1;
@@ -233,7 +263,9 @@ const ParkingLotController = (function () {
   function __findByRegistrationNumber(registrationNumber) {
     const _parkingSlots = parkingLot.getParkingSlots();
     return _parkingSlots.filter(function (value) {
-      return (value.registrationNumber === registrationNumber);
+      if (value !== null) {
+        return (value.registrationNumber === registrationNumber);
+      }
     });
   }
 
@@ -254,6 +286,7 @@ const ParkingLotController = (function () {
     findVehicle: findVehicle,
     park: parkVehicle,
     status: statusOfParking,
+    unPark: unParkVehicle
   };
 
 })();
